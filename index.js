@@ -1,13 +1,7 @@
-Sokha KHAN, [26/04/2023 0:39]
-Good evening class, we still have one more day on Saturday this week. Please join our class altogether, and especially I hope you will show me some path of your assignment.
+Sokha KHAN, [29/04/2023 14:27]
+Good afternoon class, it's refactoring part, please upload into Github for update the previous version
 
-And this is the another homework for you by placing this script into your GitHub repository, then create the task in Jira with two ticket as following:
-1) Login project with NodeJS
-2) Refactoring Login Project with NodeJS
-
-By switch your team on as creator and another person as refactor
-
-Sokha KHAN, [26/04/2023 0:49]
+Sokha KHAN, [29/04/2023 14:27]
 const express = require('express');
 const session = require('express-session');
 const passport = require('passport');
@@ -30,34 +24,38 @@ app.use(passport.initialize());
 app.use(passport.session());
  
 passport.use(new LocalStrategy(
-    function (username, password, done) {
-        // Replace this with your own user lookup function
-        if (username === 'admin' && bcrypt.compareSync(password, bcrypt.hashSync('password', 10))) {
-            return done(null, { id: 1, username: 'admin' });
-        } else {
-            return done(null, false, { message: 'Invalid username or password' });
+    async (username, password, done) => {
+        try {
+            // Replace this with your own user lookup function
+            const user = { id: 1, username: 'admin', password: '$2b$10$uS/fBcV7iuuTFT/dh/7iXe14z/G3lpwj/lpP.8h7g69CXiF2rv7nG' };
+            if (username === user.username && await bcrypt.compare(password, user.password)) {
+                return done(null, user);
+            } else {
+                return done(null, false, { message: 'Invalid username or password' });
+            }
+        } catch (err) {
+            done(err);
         }
     }
 ));
  
-passport.serializeUser(function (user, done) {
+passport.serializeUser((user, done) => {
     done(null, user.id);
 });
  
-passport.deserializeUser(function (id, done) {
+passport.deserializeUser((id, done) => {
     // Replace this with your own user lookup function
-    done(null, { id: 1, username: 'admin' });
+    const user = { id: 1, username: 'admin' };
+    done(null, user);
 });
  
-app.get('/', function (req, res) {
-    res.send('Welcome Software Engineering Final Project');
+app.get('/', (req, res) => {
+    res.send('Hello, Refactoring part!');
 });
  
-app.post('/login',
-    passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login', failureFlash: true })
-);
+app.post('/login', passport.authenticate('local', { successRedirect: '/', failureRedirect: '/login', failureFlash: true }));
  
-app.get('/login', function (req, res) {
+app.get('/login', (req, res) => {
     res.send(`
         <h1>Login</h1>
         <form method="POST" action="/login">
@@ -76,6 +74,6 @@ app.get('/login', function (req, res) {
     `);
 });
  
-app.listen(PORT, function () {
+app.listen(PORT, () => {
     console.log(Server listening on http://localhost:${PORT});
 });
